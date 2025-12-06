@@ -39,6 +39,16 @@ public class User : AggregateRoot
         return Result<User>.Success(user);
     }
 
+    public Result MudarSenha(string senha)
+    {
+        if (string.IsNullOrWhiteSpace(senha))
+            return Result.Failure("A senha é obrigatória");
+        
+        Password = senha;
+        
+        return Result.Success();
+    }
+
     private static readonly Regex EmailRegex =
         new(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", RegexOptions.Compiled);
 

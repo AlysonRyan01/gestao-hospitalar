@@ -173,3 +173,114 @@ Testes do ciclo completo da consulta:
 - **NaoDeveConcluirConsultaNaoMarcada**: falha ao tentar concluir consulta não marcada.
 - **DeveCancelarConsulta**: cancela uma consulta e armazena motivo.
 - **NaoDeveCancelarConsultaSemMotivo**: falha ao tentar cancelar consulta sem informar motivo.
+
+---
+
+## 7. Commands
+
+### 7.1 Users
+
+-   `RegisterUserCommand`
+-   `LoginCommand`
+-   `MudarSenhaCommand`
+
+### 7.2 Medicos
+
+-   `CriarMedicoCommand`
+-   `AtualizarMedicoCommand`
+
+### 7.3 Consultas
+
+-   `SolicitarAgendamentoCommand`
+-   `AgendarConsultaCommand`
+-   `CancelarConsultaCommand`
+-   `ConcluirConsultaCommand`
+
+------------------------------------------------------------------------
+
+## 8. Handlers
+
+### 8.1 IUserHandler
+
+-   Registrar usuário
+-   Login usando BCrypt
+-   Mudar senha
+
+### 8.2 IMedicoHandler
+
+-   Criar médico
+-   Atualizar médico
+-   Excluir médico
+-   Listar médicos
+-   Buscar por ID
+
+### 8.3 IConsultaHandler
+
+-   Solicitar agendamento
+-   Agendar
+-   Concluir
+-   Cancelar
+-   Consultas por paciente
+-   Consultas por médico
+
+------------------------------------------------------------------------
+
+## 9. DTOs
+
+### UserDto
+
+``` csharp
+public record UserDto(Guid Id, string Name, string Email, string Phone);
+```
+
+### MedicoDto
+
+``` csharp
+public record MedicoDto(Guid Id, string Nome, string Telefone, string Especialidade);
+```
+
+### ConsultaDto
+
+``` csharp
+public record ConsultaDto(Guid Id, Guid PacienteId, Guid? MedicoId,
+                          string Sobre, DateTime MarcadoPara,
+                          string Status);
+```
+
+------------------------------------------------------------------------
+
+## 10. Validações FluentValidation
+
+### LoginCommandValidator
+
+-   Email obrigatório
+-   Email válido
+-   Senha obrigatória
+
+### MudarSenhaCommandValidator
+
+-   SenhaAtual obrigatória
+-   NovaSenha obrigatória
+-   NovaSenha mínima 6 caracteres
+
+### SolicitarAgendamentoValidator
+
+-   Sobre obrigatório
+-   Data futura
+-   Dentro dos horários permitidos
+
+------------------------------------------------------------------------
+
+## 11. Autenticação (BCrypt)
+
+### Como funciona:
+
+-   No registro:
+    -   A senha é criptografada com `BCrypt.HashPassword`.
+-   No login:
+    -   É usado `BCrypt.Verify(password, hash)`.
+-   Ao mudar senha:
+    -   Valida senha atual com `Verify`
+    -   Gera um novo hash com `HashPassword`
+
+------------------------------------------------------------------------
