@@ -28,7 +28,7 @@ public class Paciente : AggregateRoot
         return Result<Paciente>.Success(paciente);
     }
 
-    internal Result AdicionarConsulta(Consulta consulta)
+    public Result AdicionarConsulta(Consulta consulta)
     {
         _consultas.Add(consulta);
         return Result.Success();

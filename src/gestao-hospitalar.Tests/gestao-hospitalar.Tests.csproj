@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MSTest" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gestao-hospitalar.Domain\gestao-hospitalar.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

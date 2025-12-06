@@ -21,23 +21,20 @@ Representa o paciente do hospital.
 
 | Campo   | Tipo   | Descrição                                 |
 |---------|--------|-------------------------------------------|
-| Nome    | string | Nome do paciente                           |
-| Email   | string | Email de contato                           |
-| Telefone| string | Telefone de contato                        |
 | UserId  | Guid   | Referência ao `User` correspondente       |
+| User    | User   | Usuário associado                         |
 
 #### Relações
 - Um paciente pode ter várias consultas (`Consulta`).
 
 #### Funções principais
-- Criar e atualizar paciente.
-- Validar informações básicas (`Nome`, `Email`, `Telefone`).
+- Criar paciente a partir de um `User`.
 - Adicionar consulta.
 - Visualizar consultas por status:
-  - Solicitadas
-  - Marcadas
-  - Concluídas
-  - Canceladas
+    - Solicitadas
+    - Marcadas
+    - Concluídas
+    - Canceladas
 
 ---
 
@@ -57,9 +54,9 @@ Representa o médico do hospital.
 - Criar e atualizar médico.
 - Validar horários disponíveis para consultas.
 - Visualizar consultas por status:
-  - Marcadas
-  - Concluídas
-  - Canceladas
+    - Marcadas
+    - Concluídas
+    - Canceladas
 
 ---
 
@@ -88,15 +85,15 @@ Representa uma consulta médica agendada.
 ## 2. Validações
 
 - **Paciente**
-  - Nome não pode ser vazio.
-  - Email deve seguir padrão válido.
-  - Telefone deve seguir padrão válido.
+    - Nome não pode ser vazio.
+    - Email deve seguir padrão válido.
+    - Telefone deve seguir padrão válido.
 - **Consulta**
-  - Só pode ser agendada em dias úteis.
-  - Horários válidos: 09:00 às 12:00 e 13:00 às 18:00.
+    - Só pode ser agendada em dias úteis.
+    - Horários válidos: 09:00 às 12:00 e 13:00 às 18:00.
 - **Medico**
-  - Horários de consulta devem respeitar duração mínima e máxima.
-  - Evita conflitos de horários com outras consultas marcadas.
+    - Horários de consulta devem respeitar duração mínima (5 min) e máxima (3 h).
+    - Evita conflitos de horários com outras consultas marcadas.
 
 ---
 
@@ -127,3 +124,52 @@ Representa uma consulta médica agendada.
 - Consultas são o ponto central de interação entre paciente e médico.
 
 ---
+
+## 6. Testes Unitários
+
+Os testes utilizam **MSTest** e cobrem as principais funcionalidades das entidades do sistema.
+
+### 6.1 User
+Testes da criação de usuário e validação de dados:
+
+- **DeveCriarUsuarioComSucesso**: cria um usuário válido e verifica se todos os campos foram atribuídos corretamente.
+- **NaoDeveCriarUsuarioSemNome**: falha ao tentar criar usuário sem nome.
+- **NaoDeveCriarUsuarioComEmailInvalido**: falha ao tentar criar usuário com e-mail inválido.
+- **NaoDeveCriarUsuarioSemSenha**: falha ao tentar criar usuário sem senha.
+- **NaoDeveCriarUsuarioComTelefoneInvalido**: falha ao tentar criar usuário com telefone inválido.
+
+---
+
+### 6.2 Paciente
+Testes da criação de paciente e gerenciamento de consultas:
+
+- **DeveCriarPacienteComSucesso**: cria um paciente a partir de um usuário existente e verifica o vínculo.
+- **DeveAdicionarConsultaAoPaciente**: adiciona uma consulta ao paciente e valida se foi adicionada corretamente.
+- **DeveRetornarConsultasPorStatus**: filtra consultas do paciente por status (solicitadas, marcadas, canceladas, concluídas).
+
+---
+
+### 6.3 Medico
+Testes da criação de médico e validação de horários:
+
+- **DeveCriarMedicoComSucesso**: cria um médico válido e verifica todos os campos.
+- **NaoDeveCriarMedicoSemNome**: falha ao criar médico sem nome.
+- **NaoDeveCriarMedicoComTelefoneInvalido**: falha ao criar médico com telefone inválido.
+- **NaoDeveCriarMedicoSemEspecialidade**: falha ao criar médico sem especialidade.
+- **DeveValidarHorarioDisponivel**: verifica se o médico consegue validar horários livres.
+- **NaoDeveValidarHorarioComConflito**: falha ao tentar marcar consulta em horário já ocupado.
+- **NaoDeveValidarHorarioForaDuracaoPermitida**: falha ao tentar marcar consulta com duração menor que 5 minutos ou maior que 3 horas.
+
+---
+
+### 6.4 Consulta
+Testes do ciclo completo da consulta:
+
+- **DeveCriarConsultaComSucesso**: solicita uma consulta e verifica status e dados.
+- **NaoDeveCriarConsultaComHorarioInvalido**: falha ao tentar marcar consulta fora do expediente ou em final de semana.
+- **DeveAgendarConsultaComSucesso**: agenda consulta com médico disponível.
+- **NaoDeveAgendarConsultaCancelada**: impede agendamento de consulta já cancelada.
+- **DeveConcluirConsulta**: conclui uma consulta previamente marcada.
+- **NaoDeveConcluirConsultaNaoMarcada**: falha ao tentar concluir consulta não marcada.
+- **DeveCancelarConsulta**: cancela uma consulta e armazena motivo.
+- **NaoDeveCancelarConsultaSemMotivo**: falha ao tentar cancelar consulta sem informar motivo.

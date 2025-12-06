@@ -58,7 +58,7 @@ public class Medico : AggregateRoot
         return Result<Medico>.Success(this);
     }
 
-    internal Result ValidarHorarioDisponivel(Consulta consulta, int  duracaoDaConsultaEmMinutos)
+    public Result ValidarHorarioDisponivel(Consulta consulta, int  duracaoDaConsultaEmMinutos)
     {
         if (duracaoDaConsultaEmMinutos < 5 || duracaoDaConsultaEmMinutos > 180)
             return Result.Failure("A duração da consulta deve ser maior que 5 minutos e menor que 3 horas");
@@ -78,7 +78,7 @@ public class Medico : AggregateRoot
         return Result.Success();
     }
     
-    internal Result AdicionarConsulta(Consulta consulta)
+    public Result AdicionarConsulta(Consulta consulta)
     {
         _consultas.Add(consulta);
         return Result.Success();
