@@ -1,6 +1,24 @@
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+using gestao_hospitalar.Api.Extensions;
 
-app.MapGet("/", () => "Hello World!");
+var builder = WebApplication.CreateBuilder(args);
+
+builder.AddCorsConfiguration();
+builder.AddFluentValidation();
+builder.AddPostgreSql();
+builder.AddAuthentication();
+builder.AddJwtService();
+builder.ConfigureJsonSerializer();
+builder.AddDependencies();
+builder.AddSwagger();
+
+var app = builder.Build();
+app.AddExceptionMiddleware();
+app.UseCors(builder.Configuration["Cors:PolicyName"]!);
+app.AddSwagger();
+app.AddMigrations();
+app.AddAuthorization();
+app.AddEndpoints();
+
+app.MapGet("/", () => "RUNNING");
 
 app.Run();

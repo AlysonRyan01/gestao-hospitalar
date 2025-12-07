@@ -16,19 +16,22 @@ public class UserHandler : IUserHandler
     private readonly IValidator<CriarUserCommand> _criarUserValidator;
     private readonly IValidator<LoginCommand> _logarUserValidator;
     private readonly IValidator<MudarSenhaCommand> _mudarSenhaValidator;
+    private readonly IAuthenticationService _authenticationService;
 
     public UserHandler(
         IUserRepository userRepository, 
         IUnitOfWork unitOfWork,
         IValidator<CriarUserCommand> criarUserValidator,
         IValidator<LoginCommand> logarUserValidator,
-        IValidator<MudarSenhaCommand> mudarSenhaValidator)
+        IValidator<MudarSenhaCommand> mudarSenhaValidator,
+        IAuthenticationService authenticationService)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
         _criarUserValidator = criarUserValidator;
         _logarUserValidator = logarUserValidator;
         _mudarSenhaValidator = mudarSenhaValidator;
+        _authenticationService = authenticationService;
     }
 
     public async Task<Result<UserDto>> RegisterAsync(CriarUserCommand command)
@@ -53,20 +56,22 @@ public class UserHandler : IUserHandler
         return Result<UserDto>.Success(userResult.Data!.EntityToDto());
     }
 
-    public async Task<Result<UserDto>> LoginAsync(LoginCommand command)
+    public async Task<Result<string>> LoginAsync(LoginCommand command)
     {
         var validationResult = _logarUserValidator.Validate(command);
         if (!validationResult.IsValid)
-            return Result<UserDto>.Failure(string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage)));
+            return Result<string>.Failure(string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage)));
         
         var user = await _userRepository.GetByEmailAsync(command.Email);
         if (user == null)
-            return Result<UserDto>.Failure("Usuário ou senha inválidos.");
+            return Result<string>.Failure("Usuário ou senha inválidos.");
 
         if (!BCrypt.Net.BCrypt.Verify(command.Password, user.Password))
-            return Result<UserDto>.Failure("Usuário ou senha inválidos.");
+            return Result<string>.Failure("Usuário ou senha inválidos.");
 
-        return Result<UserDto>.Success(user.EntityToDto());
+        var jwt = await _authenticationService.Generate(user);
+
+        return Result<string>.Success(jwt);
     }
 
     public async Task<Result> ChangePasswordAsync(Guid userId, MudarSenhaCommand command)

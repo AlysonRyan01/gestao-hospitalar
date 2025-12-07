@@ -7,7 +7,7 @@ namespace gestao_hospitalar.Application.Handlers.Users;
 public interface IUserHandler
 {
     Task<Result<UserDto>> RegisterAsync(CriarUserCommand command);
-    Task<Result<UserDto>> LoginAsync(LoginCommand command);
+    Task<Result<string>> LoginAsync(LoginCommand command);
     Task<Result> ChangePasswordAsync(Guid userId, MudarSenhaCommand command);
     Task<UserDto?> GetByIdAsync(Guid userId);
     Task<List<UserDto>> GetAllAsync();

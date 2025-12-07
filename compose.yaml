@@ -1,0 +1,45 @@
+﻿services:
+  gestao-hospitalar.api:
+    image: gestao-hospitalar.api
+    build:
+      context: .
+      dockerfile: src/gestao-hospitalar.Api/Dockerfile
+    depends_on:
+      - db
+    networks:
+      - app-network
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__SqlConnection: "Host=db;Port=5432;Database=gestaohospitalar;Username=admin;Password=admin123"
+      Jwt__SecretKey: "MINHA_CHAVE_SECRETA_SUPER_FORTE_123"
+      Jwt__Issuer: "gestao-hospitalar-api"
+      Jwt__Audience: "gestao-hospitalar-clients"
+      Cors__PolicyName: "api"
+      Cors__Origins: "http://127.0.0.1:5500"
+
+  db:
+    image: postgres:16
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: gestaohospitalar
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d gestaohospitalar"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  db:
+
+networks:
+  app-network:
+    driver: bridge
