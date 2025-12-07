@@ -15,29 +15,26 @@ public class UserRepository : IUserRepository
     }
 
     public async Task<User?> GetByIdAsync(Guid userId)
-        => await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+        => await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
     public async Task<User?> GetByEmailAsync(string email)
-        => await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+        => await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
     public async Task<List<User>> GetAllAsync()
-        => await _context.Users.AsNoTracking().ToListAsync();
+        => await _context.Users.ToListAsync();
 
     public async Task AddAsync(User user)
     {
         _context.Users.Add(user);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(User user)
     {
         _context.Users.Update(user);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(User user)
     {
         _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
     }
 }

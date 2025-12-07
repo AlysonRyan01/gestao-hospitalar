@@ -25,8 +25,12 @@ public static class AppExtensions
     {
         if (app.Environment.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.MapOpenApi();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("http://localhost:8080/openapi/v1.json", "gestao_hospitalar v1");
+                options.RoutePrefix = string.Empty; 
+            });
         }
     }
     

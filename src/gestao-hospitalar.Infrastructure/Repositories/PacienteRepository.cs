@@ -15,7 +15,7 @@ public class PacienteRepository : IPacienteRepository
     }
 
     public async Task<Paciente?> GetByIdAsync(Guid pacienteId)
-        => await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.Id == pacienteId);
+        => await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == pacienteId);
 
     public async Task<Paciente?> GetByUserIdAsync(Guid userId)
         => await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId);
@@ -26,18 +26,15 @@ public class PacienteRepository : IPacienteRepository
     public async Task AddAsync(Paciente paciente)
     {
         _context.Pacientes.Add(paciente);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Paciente paciente)
     {
         _context.Pacientes.Update(paciente);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Paciente paciente)
     {
         _context.Pacientes.Remove(paciente);
-        await _context.SaveChangesAsync();
     }
 }

@@ -35,7 +35,7 @@ public class PacienteHandler : IPacienteHandler
         if (user == null)
             return Result<PacienteDto>.Failure("Usuário não encontrado.");
 
-        var pacienteResult = Paciente.Criar(user);
+        var pacienteResult = Paciente.Criar(userId);
         if (pacienteResult.Status == EStatus.Failure)
             return Result<PacienteDto>.Failure(pacienteResult.Mensagem!);
 

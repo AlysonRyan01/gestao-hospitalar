@@ -10,12 +10,15 @@
       - app-network
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:8080"
       ConnectionStrings__SqlConnection: "Host=db;Port=5432;Database=gestaohospitalar;Username=admin;Password=admin123"
       Jwt__SecretKey: "MINHA_CHAVE_SECRETA_SUPER_FORTE_123"
       Jwt__Issuer: "gestao-hospitalar-api"
       Jwt__Audience: "gestao-hospitalar-clients"
       Cors__PolicyName: "api"
-      Cors__Origins: "http://127.0.0.1:5500"
+      Cors__Origins: "http://localhost:8080,http://127.0.0.1:8080"
+    ports:
+      - "8080:8080"
 
   db:
     image: postgres:16

@@ -29,7 +29,7 @@ public static class BuilderExtensions
     {
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("SqlConnection"),
-                b => b.MigrationsAssembly("Infrastructure"))
+                b => b.MigrationsAssembly("gestao-hospitalar.Infrastructure"))
         );
     }
     
@@ -96,32 +96,45 @@ public static class BuilderExtensions
     
     public static void AddSwagger(this WebApplicationBuilder builder)
     {
-        builder.Services.AddSwaggerGen(c =>
+        builder.Services.AddOpenApi(options =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-            
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            options.AddDocumentTransformer((document, context, cancellationToken) =>
             {
-                Description = "Insira o token JWT desta forma: Bearer {seu_token}",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
-                Scheme = "Bearer"
-            });
-
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
+                document.Servers.Clear();
+                document.Servers.Add(new OpenApiServer
                 {
-                    new OpenApiSecurityScheme
+                    Url = "http://localhost:8080"
+                });
+                document.Components ??= new OpenApiComponents();
+            
+                document.Components.SecuritySchemes = new Dictionary<string, OpenApiSecurityScheme>
+                {
+                    ["Bearer"] = new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        Type = SecuritySchemeType.Http,
+                        Scheme = "Bearer",
+                        BearerFormat = "JWT",
+                        Description = "Insira o token JWT que é enviado no corpo da requisicao de login",
+                        In = ParameterLocation.Header
+                    }
+                };
+
+                document.SecurityRequirements.Add(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
+                return Task.CompletedTask;
             });
         });
     }

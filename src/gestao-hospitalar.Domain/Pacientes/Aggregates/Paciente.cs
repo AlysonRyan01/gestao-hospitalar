@@ -16,15 +16,14 @@ public class Paciente : AggregateRoot
 
     protected Paciente() { }
 
-    private Paciente(User user)
+    private Paciente(Guid userId)
     {
-        User = user;
-        UserId = user.Id;
+        UserId = userId;
     }
 
-    public static Result<Paciente> Criar(User user)
+    public static Result<Paciente> Criar(Guid userId)
     {
-        var paciente = new Paciente(user);
+        var paciente = new Paciente(userId);
         return Result<Paciente>.Success(paciente);
     }
 

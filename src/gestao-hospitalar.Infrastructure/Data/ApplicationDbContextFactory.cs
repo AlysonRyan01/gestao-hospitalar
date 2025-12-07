@@ -8,7 +8,6 @@ public class ApplicationDbContextFactory: IDesignTimeDbContextFactory<Applicatio
     public ApplicationDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        optionsBuilder.UseNpgsql("Server=.;Database=GestaoHospitalar;Trusted_Connection=True;");
 
         return new ApplicationDbContext(optionsBuilder.Options);
     }

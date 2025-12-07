@@ -17,20 +17,20 @@ public class Consulta : AggregateRoot
     public Guid PacienteId { get; private set; }
     public Paciente Paciente { get; private set; } = null!;
 
-    public Guid MedicoId { get; set; }
+    public Guid? MedicoId { get; set; }
     public Medico? Medico { get; private set; }
 
     protected Consulta() { }
 
-    private Consulta(Paciente paciente, string sobre, DateTime marcadoPara)
+    private Consulta(Guid pacienteId, string sobre, DateTime marcadoPara)
     {
-        Paciente = paciente;
+        PacienteId = pacienteId;
         Sobre = sobre;
         MarcadoPara = marcadoPara;
         Status = EStatusConsulta.AgendamentoSolicitado;
     }
 
-    public static Result<Consulta> SolicitarAgendamento(Paciente paciente, string sobre, DateTime marcarPara)
+    public static Result<Consulta> SolicitarAgendamento(Guid pacienteId, string sobre, DateTime marcarPara)
     {
         if (string.IsNullOrEmpty(sobre))
             return Result<Consulta>.Failure("Informar seu problema é obrigatório");
@@ -39,26 +39,18 @@ public class Consulta : AggregateRoot
         if (diaHoraValida.Status == EStatus.Failure)
             return Result<Consulta>.Failure(diaHoraValida.Mensagem!);
 
-        var consulta = new Consulta(paciente, sobre, marcarPara);
-        paciente.AdicionarConsulta(consulta);
+        var consulta = new Consulta(pacienteId, sobre, marcarPara);
         
         return Result<Consulta>.Success(consulta);
     }
 
-    public Result AgendarConsulta(Medico medico, int duracaoDaConsultaEmMinutos)
+    public Result AgendarConsulta(Guid medicoId, int duracaoDaConsultaEmMinutos)
     {
         if (Status == EStatusConsulta.ConsultaCancelada)
             return Result.Failure("Não é possível agendar uma consulta cancelada.");
         
-        var horarioMedicoDisponivel = medico.ValidarHorarioDisponivel(this, duracaoDaConsultaEmMinutos);
-        if (horarioMedicoDisponivel.Status == EStatus.Failure)
-            return Result.Failure(horarioMedicoDisponivel.Mensagem!);
-
-        medico.AdicionarConsulta(this);
-        
         FinalConsultaPara = MarcadoPara.AddMinutes(duracaoDaConsultaEmMinutos);
         Status = EStatusConsulta.AgendamentoMarcado;
-        Medico = medico;
         
         return Result.Success();
     }

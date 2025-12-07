@@ -50,11 +50,11 @@ public class ConsultaHandler : IConsultaHandler
         if (!validationResult.IsValid)
             return Result<ConsultaDto>.Failure(string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage)));
         
-        var paciente = await _pacienteRepository.GetByIdAsync(pacienteId);
+        var paciente = await _pacienteRepository.GetByUserIdAsync(pacienteId);
         if (paciente == null)
             return Result<ConsultaDto>.Failure("Paciente não encontrado.");
 
-        var resultado = Consulta.SolicitarAgendamento(paciente, command.Sobre, command.MarcarPara);
+        var resultado = Consulta.SolicitarAgendamento(paciente.Id, command.Sobre, command.MarcarPara);
         if (resultado.Status == EStatus.Failure)
             return Result<ConsultaDto>.Failure(resultado.Mensagem!);
 
@@ -87,7 +87,11 @@ public class ConsultaHandler : IConsultaHandler
         if (medico == null)
             return Result<ConsultaDto>.Failure("Médico não encontrado.");
 
-        var resultado = consulta.AgendarConsulta(medico, command.DuracaoEmMinutos);
+        var medicoTemHoraLivre = medico.ValidarHorarioDisponivel(consulta, command.DuracaoEmMinutos);
+        if (medicoTemHoraLivre.Status == EStatus.Failure)
+            return Result<ConsultaDto>.Failure(medicoTemHoraLivre.Mensagem!);
+
+        var resultado = consulta.AgendarConsulta(medicoId, command.DuracaoEmMinutos);
         if (resultado.Status == EStatus.Failure)
             return Result<ConsultaDto>.Failure(resultado.Mensagem!);
 

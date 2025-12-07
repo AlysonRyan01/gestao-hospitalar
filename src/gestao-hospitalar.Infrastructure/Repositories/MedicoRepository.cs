@@ -15,7 +15,7 @@ public class MedicoRepository : IMedicoRepository
     }
 
     public async Task<Medico?> GetByIdAsync(Guid medicoId)
-        => await _context.Medicos.AsNoTracking().FirstOrDefaultAsync(m => m.Id == medicoId);
+        => await _context.Medicos.FirstOrDefaultAsync(m => m.Id == medicoId);
 
     public async Task<List<Medico>> GetAllAsync()
         => await _context.Medicos.AsNoTracking().ToListAsync();
@@ -23,18 +23,15 @@ public class MedicoRepository : IMedicoRepository
     public async Task AddAsync(Medico medico)
     {
         _context.Medicos.Add(medico);
-        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Medico medico)
     {
         _context.Medicos.Update(medico);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Medico medico)
     {
         _context.Medicos.Remove(medico);
-        await _context.SaveChangesAsync();
     }
 }
