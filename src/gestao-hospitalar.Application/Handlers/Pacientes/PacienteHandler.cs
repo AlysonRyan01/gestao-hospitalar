@@ -49,7 +49,7 @@ public class PacienteHandler : IPacienteHandler
 
     public async Task<List<ConsultaDto>> VerConsultasSolicitadasAsync(Guid pacienteId)
     {
-        var paciente = await _pacienteRepository.GetByIdAsync(pacienteId);
+        var paciente = await _pacienteRepository.GetByUserIdAsync(pacienteId);
         if (paciente == null) return new List<ConsultaDto>();
 
         var consultas = paciente.VerConsultasSolicitadas();
@@ -58,7 +58,7 @@ public class PacienteHandler : IPacienteHandler
 
     public async Task<List<ConsultaDto>> VerConsultasMarcadasAsync(Guid pacienteId)
     {
-        var paciente = await _pacienteRepository.GetByIdAsync(pacienteId);
+        var paciente = await _pacienteRepository.GetByUserIdAsync(pacienteId);
         if (paciente == null) return new List<ConsultaDto>();
 
         var consultas = paciente.VerConsultasMarcadas();
@@ -67,7 +67,7 @@ public class PacienteHandler : IPacienteHandler
 
     public async Task<List<ConsultaDto>> VerConsultasConcluidasAsync(Guid pacienteId)
     {
-        var paciente = await _pacienteRepository.GetByIdAsync(pacienteId);
+        var paciente = await _pacienteRepository.GetByUserIdAsync(pacienteId);
         if (paciente == null) return new List<ConsultaDto>();
 
         var consultas = paciente.VerConsultasConcluidas();
@@ -76,7 +76,7 @@ public class PacienteHandler : IPacienteHandler
 
     public async Task<List<ConsultaDto>> VerConsultasCanceladasAsync(Guid pacienteId)
     {
-        var paciente = await _pacienteRepository.GetByIdAsync(pacienteId);
+        var paciente = await _pacienteRepository.GetByUserIdAsync(pacienteId);
         if (paciente == null) return new List<ConsultaDto>();
 
         var consultas = paciente.VerConsultasCanceladas();

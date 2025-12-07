@@ -7,6 +7,7 @@ using gestao_hospitalar.Domain.Consultas.Aggregates;
 using gestao_hospitalar.Domain.Consultas.Repositories;
 using gestao_hospitalar.Domain.Medicos.Repositories;
 using gestao_hospitalar.Domain.Pacientes.Repositories;
+using gestao_hospitalar.Domain.Users.Repositories;
 using gestao_hospitalar.Shared;
 
 namespace gestao_hospitalar.Application.Handlers.Consultas;
@@ -16,6 +17,7 @@ public class ConsultaHandler : IConsultaHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly IConsultaRepository _consultaRepository;
     private readonly IPacienteRepository _pacienteRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMedicoRepository _medicoRepository;
     private readonly IValidator<SolicitarAgendamentoCommand> _solicitarAgendamentoValidator;
     private readonly IValidator<AgendarConsultaCommand> _agendarConsultaValidator;
@@ -24,7 +26,8 @@ public class ConsultaHandler : IConsultaHandler
     public ConsultaHandler(
         IUnitOfWork unitOfWork,
         IConsultaRepository consultaRepository,
-        IPacienteRepository pacienteRepository,
+        IPacienteRepository pacienteRepository, 
+        IUserRepository userRepository,
         IMedicoRepository medicoRepository,
         IValidator<SolicitarAgendamentoCommand> solicitarAgendamentoValidator,
         IValidator<AgendarConsultaCommand> agendarConsultaValidator,
@@ -33,6 +36,7 @@ public class ConsultaHandler : IConsultaHandler
         _unitOfWork = unitOfWork;
         _consultaRepository = consultaRepository;
         _pacienteRepository = pacienteRepository;
+        _userRepository = userRepository;
         _medicoRepository = medicoRepository;
         _solicitarAgendamentoValidator = solicitarAgendamentoValidator;
         _agendarConsultaValidator = agendarConsultaValidator;
@@ -142,7 +146,11 @@ public class ConsultaHandler : IConsultaHandler
 
     public async Task<List<ConsultaDto>> VerConsultasPorPacienteAsync(Guid pacienteId)
     {
-        var consultas = await _consultaRepository.GetByPacienteIdAsync(pacienteId);
+        var paciente = await _pacienteRepository.GetByUserIdAsync(pacienteId);
+        if (paciente == null)
+            return new List<ConsultaDto>();
+        
+        var consultas = await _consultaRepository.GetByPacienteIdAsync(paciente.Id);
         return consultas.Select(c => c.EntityToDto()).ToList();
     }
 

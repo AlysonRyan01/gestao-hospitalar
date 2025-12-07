@@ -16,15 +16,17 @@ public static class ConsultaMapper
             consulta.FinalConsultaPara,
             consulta.MotivoCancelamento,
             consulta.Status,
-            new PacienteDto(
-                consulta.Paciente.Id,
-                new UserDto(
-                    consulta.Paciente.User.Id, 
-                    consulta.Paciente.User.Name, 
-                    consulta.Paciente.User.Email, 
-                    consulta.Paciente.User.Phone),
-                new List<ConsultaDto>()
-            ),
+            consulta.Paciente == null || consulta.Paciente.User == null
+                ? null
+                : new PacienteDto(
+                    consulta.Paciente.Id,
+                    new UserDto(
+                        consulta.Paciente.User.Id,
+                        consulta.Paciente.User.Name,
+                        consulta.Paciente.User.Email,
+                        consulta.Paciente.User.Phone),
+                    new List<ConsultaDto>()
+                ),
             consulta.Medico == null ? null : new MedicoDto(
                 consulta.Medico.Id,
                 consulta.Medico.Nome,

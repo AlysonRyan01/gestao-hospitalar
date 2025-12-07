@@ -15,7 +15,7 @@ public class MedicoRepository : IMedicoRepository
     }
 
     public async Task<Medico?> GetByIdAsync(Guid medicoId)
-        => await _context.Medicos.FirstOrDefaultAsync(m => m.Id == medicoId);
+        => await _context.Medicos.Include(c => c.Consultas).FirstOrDefaultAsync(m => m.Id == medicoId);
 
     public async Task<List<Medico>> GetAllAsync()
         => await _context.Medicos.AsNoTracking().ToListAsync();

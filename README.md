@@ -1,4 +1,64 @@
+
+
 # Gestão Hospitalar - Documentação
+
+## Servidor
+- **URL Base:** `http://localhost:8080`
+
+## Autenticação
+Alguns endpoints exigem autenticação via token JWT.
+- **Authorize:** `Auth`
+
+# Documentação de Endpoints
+
+---
+
+## 1. Endpoints de Usuário (Auth)
+
+| Método | Rota        | Descrição                                     |
+|--------|------------|-----------------------------------------------|
+| POST   | /login     | Autentica um usuário e gera um token JWT      |
+| POST   | /register  | Registra um novo usuário                      |
+| PUT    | /mudar-senha | Muda a senha do usuário                     |
+
+---
+
+## 2. Endpoints de Médicos
+
+| Método | Rota             | Descrição                        |
+|--------|-----------------|----------------------------------|
+| POST   | /medicos        | Cria um novo médico              |
+| GET    | /medicos        | Lista todos os médicos           |
+| PUT    | /medicos/{id}   | Atualiza um médico existente     |
+| DELETE | /medicos/{id}   | Remove um médico                 |
+| GET    | /medicos/{id}   | Busca um médico pelo ID          |
+
+---
+
+## 3. Endpoints de Consultas
+
+| Método | Rota                                         | Descrição                                   |
+|--------|---------------------------------------------|---------------------------------------------|
+| POST   | /consultas/solicitar                         | Solicita um agendamento de consulta         |
+| PUT    | /consultas/{consultaId}/agendar/{medicoId}  | Médico agenda uma consulta                  |
+| PUT    | /consultas/{consultaId}/concluir            | Conclui uma consulta                        |
+| PUT    | /consultas/{consultaId}/cancelar            | Cancela uma consulta                        |
+| GET    | /consultas/paciente                          | Lista consultas do paciente autenticado     |
+| GET    | /consultas/medico/{medicoId}                | Lista consultas do médico autenticado       |
+| GET    | /consultas/{consultaId}                      | Busca os detalhes de uma consulta pelo ID  |
+
+---
+
+## 4. Endpoints de Paciente
+
+| Método | Rota                                      | Descrição                                       |
+|--------|------------------------------------------|-------------------------------------------------|
+| POST   | /paciente                                 | Cria um paciente para o usuário autenticado    |
+| GET    | /paciente/consultas/solicitadas          | Lista todas as consultas solicitadas           |
+| GET    | /paciente/consultas/marcadas             | Lista todas as consultas marcadas              |
+| GET    | /paciente/consultas/concluidas           | Lista todas as consultas concluídas            |
+| GET    | /paciente/consultas/canceladas           | Lista todas as consultas canceladas            |
+
 
 ## 1. Entidades Principais
 
@@ -284,3 +344,17 @@ public record ConsultaDto(Guid Id, Guid PacienteId, Guid? MedicoId,
     -   Gera um novo hash com `HashPassword`
 
 ------------------------------------------------------------------------
+
+## Como Rodar a Aplicação
+
+Esta aplicação é composta por dois serviços: **API** e **Banco de Dados Postgres**. A maneira mais simples de rodar tudo é usando **Docker Compose**.
+
+### 1.1 Pré-requisitos
+- [Docker](https://www.docker.com/get-started) instalado
+- [Docker Compose](https://docs.docker.com/compose/) instalado
+
+### 1.2 Rodando com Docker Compose
+No diretório raiz do projeto, execute:
+
+```bash
+docker-compose up --build

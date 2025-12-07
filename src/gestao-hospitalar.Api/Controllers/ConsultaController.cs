@@ -32,19 +32,16 @@ public static class ConsultaController
           .Produces<Result<ConsultaDto>>()
           .RequireAuthorization();
         
-        app.MapPut("/consultas/{consultaId:guid}/agendar", async (
+        app.MapPut("/consultas/{consultaId:guid}/agendar/{medicoId:guid}", async (
             Guid consultaId,
+            Guid medicoId,
             AgendarConsultaCommand command,
             HttpContext http,
             IConsultaHandler handler) =>
         {
-            var medicoId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (medicoId is null)
-                return Results.BadRequest("Você precisa estar autenticado.");
-
             var result = await handler.AgendarConsultaAsync(
                 consultaId,
-                Guid.Parse(medicoId),
+                medicoId,
                 command);
 
             if (result.Status == EStatus.Failure)
@@ -119,15 +116,12 @@ public static class ConsultaController
           .WithSummary("Lista consultas do paciente autenticado.")
           .RequireAuthorization();
 
-        app.MapGet("/consultas/medico", async (
+        app.MapGet("/consultas/medico/{medicoId:guid}", async (
+                Guid medicoId,
             IConsultaHandler handler,
             HttpContext http) =>
         {
-            var medicoId = http.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (medicoId is null)
-                return Results.BadRequest("Você precisa estar autenticado.");
-
-            var consultas = await handler.VerConsultasPorMedicoAsync(Guid.Parse(medicoId));
+            var consultas = await handler.VerConsultasPorMedicoAsync(medicoId);
 
             return Results.Ok(consultas);
 

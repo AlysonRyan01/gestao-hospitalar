@@ -15,10 +15,10 @@ public class PacienteRepository : IPacienteRepository
     }
 
     public async Task<Paciente?> GetByIdAsync(Guid pacienteId)
-        => await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == pacienteId);
+        => await _context.Pacientes.Include(c => c.Consultas).FirstOrDefaultAsync(p => p.Id == pacienteId);
 
     public async Task<Paciente?> GetByUserIdAsync(Guid userId)
-        => await _context.Pacientes.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId);
+        => await _context.Pacientes.Include(c => c.Consultas).AsNoTracking().FirstOrDefaultAsync(p => p.UserId == userId);
 
     public async Task<List<Paciente>> GetAllAsync()
         => await _context.Pacientes.AsNoTracking().ToListAsync();
